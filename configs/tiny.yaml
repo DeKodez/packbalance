@@ -1,0 +1,48 @@
+model:
+  vocab_size: 49152
+  d_model: 256
+  n_layers: 4
+  n_heads: 4
+  n_kv_heads: 2
+  d_ff: 768
+  max_seq_len: 256
+  tie_embeddings: true
+  attention_backend: auto
+  use_fused_rmsnorm: true
+  use_fused_swiglu: true
+  use_fused_ce: true
+  ce_chunk_size: 256
+  gradient_checkpointing: false
+
+data:
+  dataset: synthetic
+  data_dir: data/tiny
+  seq_len: 256
+  mode: isoflop
+  schedule: balanced
+  synthetic_num_docs: 4000
+  synthetic_mu: 5.0
+  synthetic_sigma: 1.0
+  synthetic_min_len: 16
+  synthetic_max_len: 512
+  synthetic_vocab_size: 49152
+  max_doc_len: 256
+  min_doc_len: 8
+  num_workers: 2
+  prefetch_factor: 2
+  val_fraction: 0.02
+
+train:
+  output_dir: artifacts/tiny
+  max_steps: 30
+  grad_accum: 2
+  lr: 0.0003
+  min_lr: 0.00003
+  warmup_steps: 5
+  dtype: fp32
+  log_interval: 5
+  save_interval: 30
+  eval_interval: 0
+  profile: false
+  gpu_hourly_cost: 0.0
+  peak_tflops: 0.0

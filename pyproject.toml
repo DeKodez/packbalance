@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "packbalance"
+version = "0.1.0"
+description = "FLOP-balanced sequence packing for distributed LLM pretraining"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "PackBalance contributors" }]
+dependencies = [
+    "numpy>=1.24",
+    "PyYAML>=6.0",
+    "tqdm>=4.66",
+    "torch>=2.5",
+]
+
+[project.optional-dependencies]
+data = ["datasets>=2.18", "transformers>=4.40", "tokenizers>=0.15"]
+gpu = ["triton>=3.0"]
+dev = ["pytest>=8.0", "ruff>=0.5"]
+
+[project.scripts]
+packbalance-train = "packbalance.train.train:main"
+packbalance-bench = "packbalance.profiling.bench_train:main"
+packbalance-kernels = "packbalance.profiling.bench_kernels:main"
+
+[project.urls]
+Repository = "https://github.com/DeKodez/packbalance"
+
+[tool.setuptools.packages.find]
+include = ["packbalance*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+markers = [
+    "gpu: requires CUDA and Triton",
+    "slow: long-running integration test",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["E501"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"

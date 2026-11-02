@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Project artifacts
+/artifacts/
+/checkpoints/
+/data/
+/runs/
+/wandb/
+*.jsonl
+*.pt
+*.bin
+*.npy
+*.npz
+*.log
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# macOS resource forks
+._*

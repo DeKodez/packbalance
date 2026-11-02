@@ -1,0 +1,44 @@
+model:
+  vocab_size: 49152
+  d_model: 512
+  n_layers: 8
+  n_heads: 8
+  n_kv_heads: 2
+  d_ff: 1536
+  max_seq_len: 1024
+  tie_embeddings: true
+  attention_backend: auto
+  use_fused_rmsnorm: true
+  use_fused_swiglu: true
+  use_fused_ce: true
+  ce_chunk_size: 1024
+  gradient_checkpointing: false
+
+data:
+  dataset: tinystories
+  data_dir: data/tinystories
+  tokenizer: HuggingFaceTB/SmolLM-135M
+  seq_len: 1024
+  mode: isoflop
+  schedule: balanced
+  max_docs: 50000
+  max_doc_len: 1024
+  min_doc_len: 8
+  num_workers: 4
+  prefetch_factor: 4
+  val_fraction: 0.01
+
+train:
+  output_dir: artifacts/small
+  max_steps: 2000
+  grad_accum: 4
+  lr: 0.0003
+  min_lr: 0.00003
+  warmup_steps: 100
+  dtype: bf16
+  log_interval: 10
+  save_interval: 500
+  eval_interval: 250
+  eval_steps: 20
+  gpu_hourly_cost: 2.0
+  peak_tflops: 312.0
