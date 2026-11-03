@@ -4,7 +4,7 @@
 
 **Balance compute, not just tokens.**
 
-PackBalance is a throughput-first LLM pretraining stack for variable-length documents. It packs documents into fixed-length sequences, then balances the *quadratic* attention cost of those packs across microbatches and DDP/FSDP ranks. The project includes the analytical thesis, a reproducible pre-GPU validation, GPU microbenchmarks, end-to-end training benchmarks, profiler traces, and correctness tests.
+PackBalance is a throughput-first LLM pretraining stack for variable-length documents. It packs documents into fixed-length sequences, then balances the *quadratic* attention cost of those packs across microbatches and DDP/FSDP ranks. The project includes the analytical thesis, a reproducible pre-GPU validation, GPU microbenchmarks, end-to-end training benchmarks, profiler reports, and correctness tests.
 
 The headline result on a 25.4 GB Blackwell MIG slice:
 
@@ -15,6 +15,8 @@ The headline result on a 25.4 GB Blackwell MIG slice:
 | padding waste | **71.9%** | **0.31%** | **71.6 pts less** |
 
 Workload: 100M-parameter Llama-style model, 2048-token sequences, 20 timed steps after 5 warmup steps, synthetic heavy-tail document lengths, PyTorch 2.9.1 / CUDA 13.0 / Triton 3.5.1.
+
+A real-data run is included too: a 49.3M-parameter model trained on 5,000 TinyStories documents for 1,000 steps goes from train loss **10.76 → 2.16** and validation loss **6.79 → 2.90**. [Loss curve](results/tinystories/loss_curve.svg).
 
 ## Why this exists
 
@@ -58,7 +60,11 @@ The arbitrary-pack time fit is noisier (R²=0.75) because the benchmark model sp
 
 The stress test is deliberately adversarial. On the natural distribution the scheduler's step-level gain is modest because packs are already similar in cost. When 10% of packs are made 5× more expensive, the balanced scheduler cuts p99 step time by **46.2%**. Under 2% × 20× skew, p99 still falls **37.9%**, but the per-step straggler ratio gets worse: a single atomic long pack cannot be split by a scheduler. That limitation is explicit and motivates document splitting or sequence parallelism.
 
+The generated CPU report is committed at [`results/thesis/report.md`](results/thesis/report.md).
+
 ## GPU results
+
+Raw artifacts for every table and profile below are in [`results/gpu/`](results/gpu/).
 
 ### End-to-end training
 
@@ -162,6 +168,28 @@ The end-to-end throughput benchmark ran on one MIG slice. The distributed paths 
 
 NCCL multi-GPU training was not run because the available pod was a single 24 GB MIG slice. `scripts/gpu_validate.sh` runs the 2-GPU DDP/FSDP smoke when `WORLD_SIZE_GPUS>=2`.
 
+### TinyStories convergence
+
+![TinyStories loss curve](results/tinystories/loss_curve.svg)
+
+A 49.3M-parameter Llama-style model trained on 5,000 open TinyStories documents for 1,000 optimizer steps (4.02M tokens) with `pack_ffd` and the balanced scheduler. This is a short real-data sanity run, not a full pretraining run.
+
+| metric | value |
+|---|---:|
+| documents / tokens | 5,000 / 1.03M |
+| steps / tokens seen | 1,000 / 4.02M |
+| wall time | 151.5s on the 25.4 GB MIG |
+| train loss | 10.76 → 2.16 |
+| validation loss | 6.79 → 2.896 |
+| tokens/s after warmup | ~36.5k |
+| peak GPU memory | 1.60 GB |
+
+The run uses chunked CE (`use_fused_ce=false`) and bf16. A sample from the final checkpoint:
+
+> Once upon a time, there was a little girl named Lily. She lived in a small town with her mommy and daddy. One day, Lily was playing in the park when she saw a big, scary dog...
+
+Raw metrics, exact config, generation samples, and the loss curve: [`results/tinystories/`](results/tinystories/).
+
 ## Quickstart
 
 ```bash
@@ -170,6 +198,8 @@ source .venv/bin/activate
 python -m pip install -e ".[data,dev]"
 # On a CUDA box where Triton isn't already installed:
 # python -m pip install -e ".[data,dev,gpu]"
+# Optional: regenerate the loss chart
+# python -m pip install -e ".[plot]"
 ```
 
 ### 1. Prepare data
@@ -177,6 +207,10 @@ python -m pip install -e ".[data,dev]"
 ```bash
 # Open TinyStories corpus, tokenized with the open SmolLM-135M tokenizer
 python -m packbalance.data.prepare --config configs/small.yaml
+
+# The 5,000-document subset used for the convergence run
+python -m packbalance.data.prepare --config configs/small.yaml \
+  --dataset tinystories --max-docs 5000 --max-tokens 1500000 --out data/tinystories
 
 # Or the synthetic heavy-tail corpus used for systems benchmarks
 python -m packbalance.data.prepare --config configs/bench.yaml
@@ -195,6 +229,10 @@ python -m packbalance.train.train --config configs/tiny.yaml --max-steps 2
 ```bash
 torchrun --standalone --nproc_per_node=1 -m packbalance.train.train \
   --config configs/small.yaml
+
+# The exact 1,000-step TinyStories convergence run
+torchrun --standalone --nproc_per_node=1 -m packbalance.train.train \
+  --config configs/tinystories.yaml
 ```
 
 Use `--fsdp` for FSDP2, `--resume` to continue from the latest checkpoint, and `--no-fused-ce` for the faster full-logits path when memory allows.
@@ -207,13 +245,17 @@ python -m packbalance.profiling.bench_schedule --config configs/bench.yaml --wor
 python -m packbalance.profiling.bench_kernels --device cuda
 python -m packbalance.profiling.bench_train --config configs/bench.yaml --steps 20 --warmup 5 --device cuda
 python -m packbalance.profiling.bench_open_model --model HuggingFaceTB/SmolLM-135M --tokens 1024
+
+# Regenerate the TinyStories curve
+python scripts/plot_metrics.py --metrics artifacts/tinystories/metrics.jsonl \
+  --output results/tinystories/loss_curve.svg
 ```
 
 ### 5. Tests
 
 ```bash
 pytest -m "not slow"     # CPU unit + integration, 25 passed locally
-pytest -m gpu            # Triton CE/RMSNorm/SwiGLU on CUDA
+pytest -m gpu            # Triton + CUDA generation tests
 pytest -m slow           # 2-rank DDP smoke on Linux
 ```
 
@@ -333,7 +375,7 @@ Block-mask construction is not free. The GPU profile attributes **7.6%** of step
 | `test_ddp_smoke.py` | 2-rank DDP on Linux |
 | GPU tests | Triton kernels and FlexAttention vs eager |
 
-Local CPU suite: **25 passed, 4 skipped (CUDA-only), 1 deselected (slow)**. GPU suite: **3 passed** plus FlexAttention parity. DDP and FSDP2 2-rank CPU/gloo smokes passed on the Linux pod.
+Local CPU suite: **25 passed, 5 skipped (CUDA-only), 1 deselected (slow)**. GPU suite: **4 passed** plus FlexAttention parity. DDP and FSDP2 2-rank CPU/gloo smokes passed on the Linux pod.
 
 ## Limitations and next steps
 
@@ -345,7 +387,7 @@ Local CPU suite: **25 passed, 4 skipped (CUDA-only), 1 deselected (slow)**. GPU 
 - **Padded 16k baseline.** A 16,384-token padded batch hit a PyTorch/MIG allocator NVML bug during `create_block_mask`; the benchmark uses 8,192-token padded batches. The packed 2,048-token path is unaffected.
 - **Scale.** The end-to-end benchmark is a 100M model on one 24GB MIG slice. MFU is ~6.6%; this is a systems-relative benchmark, not a large-cluster efficiency claim.
 - **No tensor/pipeline/sequence parallelism, no KV cache.** Generation recomputes the prefix. These are orthogonal next steps.
-- **Real-corpus training.** TinyStories support is implemented; the report focuses on systems measurements and a short synthetic run. A longer TinyStories run is the natural next validation.
+- **Real-corpus training.** A 5,000-document, 1,000-step TinyStories run is included (train 10.76→2.16, validation 6.79→2.90). It is a short sanity run, not full pretraining; full-scale training remains future work.
 
 ## Prior art and references
 
@@ -401,8 +443,11 @@ packbalance/
 │   ├── bench_train.py      # end-to-end packing benchmark
 │   ├── bench_open_model.py # SmolLM-135M LM-head check
 ├── tests/
-├── configs/
-├── scripts/gpu_validate.sh
+├── configs/                 # tiny, small, bench, tinystories
+├── scripts/
+│   ├── gpu_validate.sh
+│   └── plot_metrics.py
+├── results/                 # raw GPU/thesis artifacts + TinyStories curve
 ```
 
 ## License

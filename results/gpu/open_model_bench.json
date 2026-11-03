@@ -1,0 +1,29 @@
+[
+  {
+    "model": "HuggingFaceTB/SmolLM-135M",
+    "variant": "full_logits",
+    "tokens": 1024,
+    "vocab": 49152,
+    "dim": 576,
+    "ms": 5.760495597496629,
+    "peak_gb": 0.536036352
+  },
+  {
+    "model": "HuggingFaceTB/SmolLM-135M",
+    "variant": "chunked_reference",
+    "tokens": 1024,
+    "vocab": 49152,
+    "dim": 576,
+    "ms": 6.395191187039018,
+    "peak_gb": 0.342180864
+  },
+  {
+    "model": "HuggingFaceTB/SmolLM-135M",
+    "variant": "fused_triton",
+    "tokens": 1024,
+    "vocab": 49152,
+    "dim": 576,
+    "ms": 12.196123600006104,
+    "peak_gb": 0.56356352
+  }
+]

@@ -1,0 +1,82 @@
+[
+  {
+    "mode": "pad",
+    "schedule": "random",
+    "steps": 82,
+    "step_cost_mean": 145991868318495.22,
+    "step_cost_cv": 0.0004287551807917677,
+    "step_cost_p99_over_mean": 1.0000476394645323,
+    "rank_cost_imbalance": 4.7639464532345244e-05,
+    "tokens": 12084038
+  },
+  {
+    "mode": "pad",
+    "schedule": "balanced",
+    "steps": 82,
+    "step_cost_mean": 145991868318495.22,
+    "step_cost_cv": 0.0004287551807917677,
+    "step_cost_p99_over_mean": 1.0000476394645323,
+    "rank_cost_imbalance": 4.7639464532345244e-05,
+    "tokens": 12084038
+  },
+  {
+    "mode": "pack_random",
+    "schedule": "random",
+    "steps": 186,
+    "step_cost_mean": 17132786936237.42,
+    "step_cost_cv": 0.008013937673576079,
+    "step_cost_p99_over_mean": 1.0219321645472994,
+    "rank_cost_imbalance": 0.06520048253304789,
+    "tokens": 12151823
+  },
+  {
+    "mode": "pack_random",
+    "schedule": "balanced",
+    "steps": 186,
+    "step_cost_mean": 17132786936237.42,
+    "step_cost_cv": 0.0008753193098280618,
+    "step_cost_p99_over_mean": 1.0001966994868916,
+    "rank_cost_imbalance": 0.013914178025664192,
+    "tokens": 12151823
+  },
+  {
+    "mode": "pack_ffd",
+    "schedule": "random",
+    "steps": 186,
+    "step_cost_mean": 17184781650679.742,
+    "step_cost_cv": 0.00778153969589854,
+    "step_cost_p99_over_mean": 1.0164011445547991,
+    "rank_cost_imbalance": 0.06197758473667481,
+    "tokens": 12188555
+  },
+  {
+    "mode": "pack_ffd",
+    "schedule": "balanced",
+    "steps": 186,
+    "step_cost_mean": 17184781650679.742,
+    "step_cost_cv": 7.76807503928483e-05,
+    "step_cost_p99_over_mean": 1.000061106980304,
+    "rank_cost_imbalance": 0.007633871022101113,
+    "tokens": 12188555
+  },
+  {
+    "mode": "isoflop",
+    "schedule": "random",
+    "steps": 186,
+    "step_cost_mean": 17181668995237.162,
+    "step_cost_cv": 0.007532641720236374,
+    "step_cost_p99_over_mean": 1.0171198608987972,
+    "rank_cost_imbalance": 0.06216997409709979,
+    "tokens": 12186511
+  },
+  {
+    "mode": "isoflop",
+    "schedule": "balanced",
+    "steps": 186,
+    "step_cost_mean": 17181668995237.162,
+    "step_cost_cv": 0.0012449027006538724,
+    "step_cost_p99_over_mean": 1.0001477564655414,
+    "rank_cost_imbalance": 0.01668191690634302,
+    "tokens": 12186511
+  }
+]

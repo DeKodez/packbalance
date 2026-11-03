@@ -1,0 +1,165 @@
+{
+  "trace": "artifacts/profile_gpu/profile/trace_1793616749.json",
+  "profiled_steps": 5,
+  "total_step_ms": 2340.411054,
+  "phases_ms": {
+    "packbalance/data": 7.026661999999999,
+    "packbalance/block_mask": 177.47908000000004,
+    "packbalance/forward": 981.6819909999999,
+    "packbalance/backward": 877.774102,
+    "packbalance/optimizer": 37.526317,
+    "packbalance/comm": 1.003629
+  },
+  "other_ms": 257.91927300000043,
+  "phase_pct": {
+    "packbalance/data": 0.3002319608767323,
+    "packbalance/block_mask": 7.583243964630498,
+    "packbalance/forward": 41.944853632536294,
+    "packbalance/backward": 37.50512545647889,
+    "packbalance/optimizer": 1.6034070996145617,
+    "packbalance/comm": 0.04288259527251404
+  },
+  "top_kernels": [
+    [
+      "void magma_sgemmEx_kernel<float, float, float, true, false, 6, 4, 6, 3, 4>(int, int, int, Tensor, int, Tensor, int, Tensor, int, Tensor, int, int, int, float const*, float const*, float, float, int, cublasLtEpilogue_t, int, void const*, long)",
+      87.616673
+    ],
+    [
+      "void cutlass::Kernel2<cutlass_80_tensorop_bf16_s16816gemm_relu_bf16_64x64_32x6_tn_align8>(cutlass_80_tensorop_bf16_s16816gemm_relu_bf16_64x64_32x6_tn_align8::Params)",
+      75.71305900000003
+    ],
+    [
+      "void cutlass::Kernel2<cutlass_80_simt_sgemm_128x128_8x4_nn_align1>(cutlass_80_simt_sgemm_128x128_8x4_nn_align1::Params)",
+      36.73848
+    ],
+    [
+      "void cutlass::Kernel2<cutlass_80_simt_sgemm_128x128_8x4_nt_align1>(cutlass_80_simt_sgemm_128x128_8x4_nt_align1::Params)",
+      31.728987999999998
+    ],
+    [
+      "void cutlass::Kernel2<cutlass_80_tensorop_bf16_s16816gemm_relu_bf16_64x64_32x6_nt_align8>(cutlass_80_tensorop_bf16_s16816gemm_relu_bf16_64x64_32x6_nt_align8::Params)",
+      26.356258000000015
+    ],
+    [
+      "void cutlass::Kernel2<cutlass_80_tensorop_bf16_s16816gemm_relu_bf16_64x64_32x6_nn_align8>(cutlass_80_tensorop_bf16_s16816gemm_relu_bf16_64x64_32x6_nn_align8::Params)",
+      24.456414999999975
+    ],
+    [
+      "void at::native::vectorized_elementwise_kernel<4, at::native::CUDAFunctor_add<float>, std::array<char*, 3ul> >(int, at::native::CUDAFunctor_add<float>, std::array<char*, 3ul>)",
+      23.973135999999997
+    ],
+    [
+      "void at::native::vectorized_elementwise_kernel<4, at::native::bfloat16_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda(float)#1}, std::array<char*, 2ul> >(int, at::native::bfloat16_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda(float)#1}, std::array<char*, 2ul>)",
+      22.35150399999996
+    ],
+    [
+      "_ce_kernel",
+      16.822752
+    ],
+    [
+      "triton_tem_fused_zeros_1",
+      15.372444000000002
+    ],
+    [
+      "void at::native::(anonymous namespace)::multi_tensor_apply_kernel<at::native::(anonymous namespace)::FusedOptimizerTensorListMetadata<4>, at::native::(anonymous namespace)::FusedAdamMathFunctor<float, 4, (at::native::ADAM_MODE)1, false>, float const*, double, double, double, double, double, bool, float const*, float const*>(at::native::(anonymous namespace)::FusedOptimizerTensorListMetadata<4>, at::native::(anonymous namespace)::FusedAdamMathFunctor<float, 4, (at::native::ADAM_MODE)1, false>, float const*, double, double, double, double, double, bool, float const*, float const*)",
+      12.01812
+    ],
+    [
+      "triton_tem_fused_0",
+      10.5324
+    ],
+    [
+      "void at::native::unrolled_elementwise_kernel<at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#4}::operator()() const::{lambda(long)#1}, std::array<char*, 2ul>, 4, TrivialOffsetCalculator<1, unsigned int>, TrivialOffsetCalculator<1, unsigned int>, at::native::memory::LoadWithCast<1>, at::native::memory::StoreWithCast<1> >(int, at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#4}::operator()() const::{lambda(long)#1}, std::array<char*, 2ul>, TrivialOffsetCalculator<1, unsigned int>, TrivialOffsetCalculator<1, unsigned int>, at::native::memory::LoadWithCast<1>, at::native::memory::StoreWithCast<1>)",
+      10.106511
+    ],
+    [
+      "void at::native::reduce_kernel<512, 1, at::native::ReduceOp<long, at::native::func_wrapper_t<long, at::native::sum_functor<long, long, long>::operator()(at::TensorIterator&)::{lambda(long, long)#1}>, unsigned int, long, 4, 4> >(at::native::ReduceOp<long, at::native::func_wrapper_t<long, at::native::sum_functor<long, long, long>::operator()(at::TensorIterator&)::{lambda(long, long)#1}>, unsigned int, long, 4, 4>)",
+      8.9012
+    ],
+    [
+      "void at::native::unrolled_elementwise_kernel<at::native::CUDAFunctor_add<float>, std::array<char*, 3ul>, 4, TrivialOffsetCalculator<2, unsigned int>, TrivialOffsetCalculator<1, unsigned int>, at::native::memory::LoadWithCast<2>, at::native::memory::StoreWithCast<1> >(int, at::native::CUDAFunctor_add<float>, std::array<char*, 3ul>, TrivialOffsetCalculator<2, unsigned int>, TrivialOffsetCalculator<1, unsigned int>, at::native::memory::LoadWithCast<2>, at::native::memory::StoreWithCast<1>)",
+      5.423925999999997
+    ]
+  ],
+  "kernel_pct": {
+    "void magma_sgemmEx_kernel<float, float, float, true, false, 6, 4, 6, 3, 4>(int, int, int, Tensor, int, Tensor, int, Tensor, int, Tensor, int, int, int, float const*, float const*, float, float, int, cublasLtEpilogue_t, int, void const*, long)": 19.311296091983838,
+    "void cutlass::Kernel2<cutlass_80_tensorop_bf16_s16816gemm_relu_bf16_64x64_32x6_tn_align8>(cutlass_80_tensorop_bf16_s16816gemm_relu_bf16_64x64_32x6_tn_align8::Params)": 16.687660582351057,
+    "void cutlass::Kernel2<cutlass_80_simt_sgemm_128x128_8x4_nn_align1>(cutlass_80_simt_sgemm_128x128_8x4_nn_align1::Params)": 8.097404762783293,
+    "void cutlass::Kernel2<cutlass_80_simt_sgemm_128x128_8x4_nt_align1>(cutlass_80_simt_sgemm_128x128_8x4_nt_align1::Params)": 6.993279486508259,
+    "void cutlass::Kernel2<cutlass_80_tensorop_bf16_s16816gemm_relu_bf16_64x64_32x6_nt_align8>(cutlass_80_tensorop_bf16_s16816gemm_relu_bf16_64x64_32x6_nt_align8::Params)": 5.8090941448406515,
+    "void cutlass::Kernel2<cutlass_80_tensorop_bf16_s16816gemm_relu_bf16_64x64_32x6_nn_align8>(cutlass_80_tensorop_bf16_s16816gemm_relu_bf16_64x64_32x6_nn_align8::Params)": 5.390356141615128,
+    "void at::native::vectorized_elementwise_kernel<4, at::native::CUDAFunctor_add<float>, std::array<char*, 3ul> >(int, at::native::CUDAFunctor_add<float>, std::array<char*, 3ul>)": 5.2838382433146815,
+    "void at::native::vectorized_elementwise_kernel<4, at::native::bfloat16_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda(float)#1}, std::array<char*, 2ul> >(int, at::native::bfloat16_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda(float)#1}, std::array<char*, 2ul>)": 4.926419790502206,
+    "_ce_kernel": 3.7078461647820533,
+    "triton_tem_fused_zeros_1": 3.388188658355475,
+    "void at::native::(anonymous namespace)::multi_tensor_apply_kernel<at::native::(anonymous namespace)::FusedOptimizerTensorListMetadata<4>, at::native::(anonymous namespace)::FusedAdamMathFunctor<float, 4, (at::native::ADAM_MODE)1, false>, float const*, double, double, double, double, double, bool, float const*, float const*>(at::native::(anonymous namespace)::FusedOptimizerTensorListMetadata<4>, at::native::(anonymous namespace)::FusedAdamMathFunctor<float, 4, (at::native::ADAM_MODE)1, false>, float const*, double, double, double, double, double, bool, float const*, float const*)": 2.6488733918142815,
+    "triton_tem_fused_0": 2.321410845618511,
+    "void at::native::unrolled_elementwise_kernel<at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#4}::operator()() const::{lambda(long)#1}, std::array<char*, 2ul>, 4, TrivialOffsetCalculator<1, unsigned int>, TrivialOffsetCalculator<1, unsigned int>, at::native::memory::LoadWithCast<1>, at::native::memory::StoreWithCast<1> >(int, at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::operator()() const::{lambda()#4}::operator()() const::{lambda(long)#1}, std::array<char*, 2ul>, TrivialOffsetCalculator<1, unsigned int>, TrivialOffsetCalculator<1, unsigned int>, at::native::memory::LoadWithCast<1>, at::native::memory::StoreWithCast<1>)": 2.227542084117844,
+    "void at::native::reduce_kernel<512, 1, at::native::ReduceOp<long, at::native::func_wrapper_t<long, at::native::sum_functor<long, long, long>::operator()(at::TensorIterator&)::{lambda(long, long)#1}>, unsigned int, long, 4, 4> >(at::native::ReduceOp<long, at::native::func_wrapper_t<long, at::native::sum_functor<long, long, long>::operator()(at::TensorIterator&)::{lambda(long, long)#1}>, unsigned int, long, 4, 4>)": 1.9618835421195062,
+    "void at::native::unrolled_elementwise_kernel<at::native::CUDAFunctor_add<float>, std::array<char*, 3ul>, 4, TrivialOffsetCalculator<2, unsigned int>, TrivialOffsetCalculator<1, unsigned int>, at::native::memory::LoadWithCast<2>, at::native::memory::StoreWithCast<1> >(int, at::native::CUDAFunctor_add<float>, std::array<char*, 3ul>, TrivialOffsetCalculator<2, unsigned int>, TrivialOffsetCalculator<1, unsigned int>, at::native::memory::LoadWithCast<2>, at::native::memory::StoreWithCast<1>)": 1.1954692797683548
+  },
+  "total_kernel_ms": 453.706849,
+  "top_cpu_ops": [
+    [
+      "aten::item",
+      482.70238900000004
+    ],
+    [
+      "aten::_local_scalar_dense",
+      482.53220500000003
+    ],
+    [
+      "aten::index",
+      368.8915150000003
+    ],
+    [
+      "aten::linear",
+      259.6144700000015
+    ],
+    [
+      "aten::to",
+      172.95829699999987
+    ],
+    [
+      "autograd::engine::evaluate_function: MmBackward0",
+      164.08923800000008
+    ],
+    [
+      "aten::_to_copy",
+      158.9161710000005
+    ],
+    [
+      "aten::mm",
+      156.66088500000023
+    ],
+    [
+      "MmBackward0",
+      144.55686599999981
+    ],
+    [
+      "autograd::engine::evaluate_function: _RMSNormBackward",
+      112.36988300000002
+    ],
+    [
+      "aten::copy_",
+      111.6119650000004
+    ],
+    [
+      "_RMSNormBackward",
+      97.14170500000009
+    ],
+    [
+      "autograd::engine::evaluate_function: ToCopyBackward0",
+      96.64825599999998
+    ],
+    [
+      "aten::matmul",
+      84.61767100000003
+    ],
+    [
+      "autograd::engine::evaluate_function: CompiledFunctionBackward",
+      82.39167999999995
+    ]
+  ],
+  "total_cpu_ms": 4813.414023000002
+}

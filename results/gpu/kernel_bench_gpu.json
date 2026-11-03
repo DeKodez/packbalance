@@ -1,0 +1,54 @@
+[
+  {
+    "kernel": "rmsnorm",
+    "variant": "reference",
+    "shape": "8192x768",
+    "ms": 0.41371259139850736,
+    "gbps": 121.66591263236471
+  },
+  {
+    "kernel": "rmsnorm",
+    "variant": "triton",
+    "shape": "8192x768",
+    "ms": 0.13255500234663486,
+    "gbps": 379.72704997110077
+  },
+  {
+    "kernel": "swiglu",
+    "variant": "reference",
+    "shape": "8192x768",
+    "ms": 0.33641241025179625,
+    "gbps": 224.41940219592982
+  },
+  {
+    "kernel": "swiglu",
+    "variant": "triton",
+    "shape": "8192x768",
+    "ms": 0.206373305991292,
+    "gbps": 365.82963885448265
+  },
+  {
+    "kernel": "linear_cross_entropy",
+    "variant": "full_logits",
+    "shape": "2048x768x49152",
+    "ms": 47.29475821368396,
+    "tflops": 9.807777552688508,
+    "peak_mb": 1942.242304
+  },
+  {
+    "kernel": "linear_cross_entropy",
+    "variant": "chunked_reference",
+    "shape": "2048x768x49152",
+    "ms": 48.25986418873072,
+    "tflops": 9.611640558166268,
+    "peak_mb": 1136.936448
+  },
+  {
+    "kernel": "linear_cross_entropy",
+    "variant": "fused_triton",
+    "shape": "2048x768x49152",
+    "ms": 69.48397839441895,
+    "tflops": 6.675732718339247,
+    "peak_mb": 1092.903936
+  }
+]
