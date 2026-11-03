@@ -1,3 +1,4 @@
+import pytest
 import torch
 import torch.nn.functional as F
 
@@ -70,3 +71,19 @@ def test_flex_attention_matches_eager_on_cuda() -> None:
     out = flex_attention(q, k, v, block_mask=mask)
     ref = eager_attention(q, k, v, doc_ids)
     torch.testing.assert_close(out, ref, atol=2e-2, rtol=2e-2)
+
+
+@pytest.mark.gpu
+def test_generate_short_prompt_cuda(model_cfg) -> None:
+    if not torch.cuda.is_available():
+        pytest.skip("CUDA is required")
+    from dataclasses import replace
+
+    from packbalance.model.llama import LlamaForCausalLM
+
+    cfg = replace(model_cfg, attention_backend="auto", compile_attention=True)
+    torch.manual_seed(0)
+    model = LlamaForCausalLM(cfg).cuda().eval()
+    input_ids = torch.randint(0, cfg.vocab_size, (1, 4), device="cuda")
+    out = model.generate(input_ids, max_new_tokens=3, temperature=0.0)
+    assert out.shape == (1, 7)

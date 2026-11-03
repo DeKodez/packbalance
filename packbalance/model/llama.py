@@ -252,28 +252,38 @@ class LlamaForCausalLM(nn.Module):
         top_k: int | None = None,
     ) -> torch.Tensor:
         self.eval()
-        ids = input_ids
-        for _ in range(max_new_tokens):
-            if ids.shape[1] >= self.cfg.max_seq_len:
-                break
-            position_ids = torch.arange(ids.shape[1], device=ids.device).unsqueeze(0)
-            doc_ids = torch.zeros_like(ids)
-            out = self.forward(ids, position_ids=position_ids, doc_ids=doc_ids)
-            assert out.logits is not None
-            logits = out.logits[:, -1, :].float()
-            if temperature <= 0:
-                next_id = logits.argmax(dim=-1, keepdim=True)
-            else:
-                logits = logits / temperature
-                if top_k is not None:
-                    k = min(top_k, logits.shape[-1])
-                    values, _ = torch.topk(logits, k)
-                    cutoff = values[:, -1:]
-                    logits = logits.masked_fill(logits < cutoff, -float("inf"))
-                probs = torch.softmax(logits, dim=-1)
-                next_id = torch.multinomial(probs, num_samples=1)
-            ids = torch.cat([ids, next_id], dim=1)
-        return ids
+        # Generation recomputes the prefix and uses tiny prompt lengths.  Eager
+        # attention avoids compiling a fresh FlexAttention kernel per length.
+        attention_modules = [layer.self_attn for layer in self.model.layers]
+        old_backends = [module.attention_backend for module in attention_modules]
+        for module in attention_modules:
+            module.attention_backend = "eager"
+        try:
+            ids = input_ids
+            for _ in range(max_new_tokens):
+                if ids.shape[1] >= self.cfg.max_seq_len:
+                    break
+                position_ids = torch.arange(ids.shape[1], device=ids.device).unsqueeze(0)
+                doc_ids = torch.zeros_like(ids)
+                out = self.forward(ids, position_ids=position_ids, doc_ids=doc_ids)
+                assert out.logits is not None
+                logits = out.logits[:, -1, :].float()
+                if temperature <= 0:
+                    next_id = logits.argmax(dim=-1, keepdim=True)
+                else:
+                    logits = logits / temperature
+                    if top_k is not None:
+                        k = min(top_k, logits.shape[-1])
+                        values, _ = torch.topk(logits, k)
+                        cutoff = values[:, -1:]
+                        logits = logits.masked_fill(logits < cutoff, -float("inf"))
+                    probs = torch.softmax(logits, dim=-1)
+                    next_id = torch.multinomial(probs, num_samples=1)
+                ids = torch.cat([ids, next_id], dim=1)
+            return ids
+        finally:
+            for module, backend in zip(attention_modules, old_backends, strict=True):
+                module.attention_backend = backend
 
 
 def count_parameters(model: nn.Module) -> int:

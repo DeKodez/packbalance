@@ -35,7 +35,10 @@ def build_doc_block_mask(
             raise ValueError("build_doc_block_mask expects a single packed sequence")
         doc_ids = doc_ids[0]
     seq_len = doc_ids.numel()
-    block_size = min(block_size, max(16, seq_len))
+    # Compiled FlexAttention requires mask block sizes that are divisible by
+    # its tile size; never shrink below 32, and keep the value a power of two.
+    power_of_two = 1 << max(0, seq_len - 1).bit_length()
+    block_size = min(block_size, max(32, power_of_two))
 
     def mask_mod(b, h, q_idx, kv_idx):
         return (doc_ids[q_idx] == doc_ids[kv_idx]) & (q_idx >= kv_idx)
